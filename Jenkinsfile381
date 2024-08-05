@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    tools {
+        maven "maven-3.9.8"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Git code"
+                git credentialsId: 'ed4d262c-d394-431b-bf93-f910242d2be9', url: 'https://github.com/adhanduprolu/maven-web-application.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Package the code"
+                sh "mvn clean package"
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo "Test the code"
+                sh "mvn sonar:sonar"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploy the code to Nexus Repo"
+                sh "mvn clean deploy"
+            }
+        }
+        
+        stage('Tomcat'){
+            steps{
+                sshagent(['0b8f1e7e-836b-4a22-bb40-4c2d2199389c']) 
+                {
+                sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@52.14.55.146:/opt/apache-tomcat-9.0.91/webapps"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline succeeded!'
+            // Additional actions upon success
+        }
+        failure {
+            echo 'Pipeline failed :('
+            // Additional actions upon failure
+        }
+    }
+}
