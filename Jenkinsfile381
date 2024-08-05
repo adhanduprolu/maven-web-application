@@ -4,10 +4,12 @@ pipeline {
     tools {
         maven "maven-3.9.8"
     }
-options {
-  buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')
-  timestamps
-}
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+        timestamps()
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -36,12 +38,11 @@ options {
                 sh "mvn clean deploy"
             }
         }
-        
-        stage('Tomcat'){
-            steps{
-                sshagent(['0b8f1e7e-836b-4a22-bb40-4c2d2199389c']) 
-                {
-                sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@52.14.55.146:/opt/apache-tomcat-9.0.91/webapps"
+
+        stage('Tomcat') {
+            steps {
+                sshagent(['0b8f1e7e-836b-4a22-bb40-4c2d2199389c']) {
+                    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@52.14.55.146:/opt/apache-tomcat-9.0.91/webapps"
                 }
             }
         }
