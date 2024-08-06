@@ -42,7 +42,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo "Deploy the code to Nexus Repo"
-                sh "mvn clean deploy"
+                sh "mvn deploy"
             }
         }
 
