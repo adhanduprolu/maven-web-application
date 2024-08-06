@@ -21,7 +21,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo "Git code"
-                git branch: "params.BranchName" credentialsId: 'ed4d262c-d394-431b-bf93-f910242d2be9', url: 'https://github.com/adhanduprolu/maven-web-application.git'
+                git credentialsId: 'ed4d262c-d394-431b-bf93-f910242d2be9', url: 'https://github.com/adhanduprolu/maven-web-application.git'
             }
         }
 
